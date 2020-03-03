@@ -1,53 +1,53 @@
 package gr.university.thesis.controller;
 
-import gr.university.thesis.entity.Edge;
-import gr.university.thesis.entity.Graph;
+//import gr.university.thesis.service.DijktraShortestPathServiceImp;
+
 import gr.university.thesis.entity.Station;
-import gr.university.thesis.service.DijktraShortestPathService;
-import gr.university.thesis.service.EdgeService;
 import gr.university.thesis.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.*;
+import java.util.List;
 
 @Controller
 public class GeneralController {
 
     @Autowired
-    StationService stationService;
+    private StationService stationService;
 
 //    @Autowired
-//    EdgeService edgeService;
+//    private LegService legService;
 
-    @Autowired
-    DijktraShortestPathService dijktraShortestPathService;
+    @GetMapping("/test")
+    public String test() { //
 
-    @GetMapping("/Dijktra")
-    public String dijktraAlgorithm() {
-        Station source = stationService.findStationById(1);
-        Station destination = stationService.findStationById(10);
-        dijktraShortestPathService.dijktraAlgorithmDistanceCost(source, destination);
-
-//        List<Station> stationList = stationService.findStations();
-//        List<Edge> edgeList = edgeService.findEdges();
-//
-//        List<Station> stationResults = new ArrayList<>();
-//        for (Station station : stationList) {
-//            station.setName(stationList.iterator().next().getName());
-//            station.setAdjacentEdges(new Edge(
-//                    edgeList.iterator().next().setSource(edgeList.get(station.getId()).getSource()),
-//                    edgeList.iterator().next().setDestination(edgeList.get(station.getId()).getDestination()),
-//                    edgeList.iterator().next().setDistanceCost(edgeList.get(station.getId()).getDistanceCost()),
-//                    edgeList.iterator().next().setTimeCost(edgeList.get(station.getId()).getTimeCost())));
-//            stationResults.add(station);
+//        List<Station> stations = stationRepository.findAll();
+//        List<Leg> legs = legRepository.findAll();
+//        for (Station s : stations) {
+//            s.setAdjacentLegs(legs);
 //        }
-//        Set<Station> stationSet = new HashSet<>(stationResults);
+//        Set<Station> stationSet = new HashSet<>(stations);
 //        Graph graph = new Graph(stationSet);
-//        graph.dijktraAlgorithmDistanceCost(stationList.get(3), stationList.get(9));
-        return "DijktraS";
-    }
+//        graph.dijktraAlgorithmDistanceCost(stationRepository.findStationById(1), stationRepository.findStationById(11));
 
+//        Graph map = new Graph();
+
+        List<Station> stationList = stationService.findAllStations();
+        for (Station station : stationList) {
+            System.out.println(station);
+        }
+
+
+//
+//        for (Station station : sourcesSet) {
+//            System.out.println(station.getId() + " station has " + station.getAdjacentLegs());
+//        }
+
+//        stationService.dijktraAlgorithmTimeCost(one, eight);
+
+
+        return "lol";
+
+    }
 }

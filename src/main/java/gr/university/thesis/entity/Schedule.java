@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 @Entity
@@ -23,6 +24,7 @@ public class Schedule {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicleSchedule;
 
-    private Timestamp nextStationTime;
+    @ElementCollection
+    private List<Timestamp> timetable;
 
 }

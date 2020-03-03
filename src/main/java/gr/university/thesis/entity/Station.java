@@ -1,40 +1,49 @@
 package gr.university.thesis.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 
-//Station class represents all vertices in the graph
+// Station class
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Station {
 
-    //Generated id of each station
+    // Generated id of each station
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    //Name of each station
+    @ManyToOne
+    @JoinColumn(name = "proximity_id")
+    private Proximity proximity;
+
+    // Name of each station
     @Column
     private String name;
 
-    //Geographical coordinates of each station
+    // Geographical coordinates of each station
     @Column
-    private double latitude;
+    private BigDecimal latitude;
     @Column
-    private double longitude;
+    private BigDecimal longitude;
 
-    //Boolean which determines whether a station has been visited or not.
+    // Boolean which determines whether a station has been visited or not.
     @Transient
     private boolean visited;
 
-    //List of adjacent edges of each vertex
+    // List of adjacent edges of each vertex
     @Transient
-    @EqualsAndHashCode.Exclude private List<Edge> adjacentEdges;
+    @EqualsAndHashCode.Exclude
+    private List<Leg> adjacentLegs;
 
     @Override
     public String toString() {

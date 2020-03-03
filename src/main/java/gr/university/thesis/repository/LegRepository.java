@@ -1,9 +1,10 @@
 package gr.university.thesis.repository;
 
-import gr.university.thesis.entity.Edge;
+import gr.university.thesis.entity.Leg;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EdgeRepository extends JpaRepository<Edge, Integer> {
+public interface LegRepository extends JpaRepository<Leg, Integer> {
+    Leg findStationById(Integer id);
 }

@@ -15,7 +15,7 @@ public class Vehicle {
 
     //Generated id of each transportation vehicle
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     //Name of each vertex
@@ -27,11 +27,11 @@ public class Vehicle {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "vehicleType_id")
+    @JoinColumn(name = "vehicle_type_id")
     private VehicleType vehicleType;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "vehicleRoute")
-    private List<Edge> route;
+    private List<Leg> route;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "vehicleSchedule")
     private List<Schedule> timeline;

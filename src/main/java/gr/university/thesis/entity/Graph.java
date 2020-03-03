@@ -1,14 +1,10 @@
 package gr.university.thesis.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 // Graph class represents a map/graph upon which stations exist and connect to each other.
-@Data
-@NoArgsConstructor
 public class Graph {
 
     // Set of stations
@@ -16,6 +12,10 @@ public class Graph {
 
     public Graph(Set<Station> stations) {
         this.stations = stations;
+    }
+
+    public Graph() {
+        new HashSet<Station>();
     }
 
     // Method attempts to find the shortest path between two stations/vertices in the map/graph.
@@ -58,9 +58,9 @@ public class Graph {
          *      1) Assigns cost values between the start station and its adjacent stations.
          *      2) Adjacent vertices (children) point to the start vertex (parent).
          */
-        for (Edge edge : start.getAdjacentEdges()) {
-            shortestPath.put(edge.getDestination(), edge.getDistanceCost());
-            successor.put(edge.getDestination(), start);
+        for (Leg leg : start.getAdjacentLegs()) {
+            shortestPath.put(leg.getDestination(), leg.getDistanceCost());
+            successor.put(leg.getDestination(), start);
         }
 
         // Loop which repeats until all stations in the graph are visited.
@@ -112,23 +112,23 @@ public class Graph {
             nextStation.setVisited(true);
 
             // For loop: Updates shortest path costs of every non visited adjacent station from the current station.
-            for (Edge edge : nextStation.getAdjacentEdges()) {
+            for (Leg leg : nextStation.getAdjacentLegs()) {
                 // Skipping already visited adjacent stations.
-                if (edge.getDestination().isVisited()) {
+                if (leg.getDestination().isVisited()) {
                     continue;
                 }
                 /*
                  *  In case the new path of the adjacent station is shorter when going through
                  *  the current station (nextStation), than its previous cost value:
                  *      1) Update shortest path of adjacent station to equal the shortest path cost
-                 *         of the station we are currently in plus the cost of the edge which connects
+                 *         of the station we are currently in plus the cost of the leg which connects
                  *         the current station and its adjacent one.
                  *      2) Let the adjacent station be included in the path to the end destination:
                  *         adjacent station (child) follows the current station (parent).
                  */
-                if (shortestPath.get(nextStation) + edge.getDistanceCost() < shortestPath.get(edge.getDestination())) {
-                    shortestPath.put(edge.getDestination(), shortestPath.get(nextStation) + edge.getDistanceCost());
-                    successor.put(edge.getDestination(), nextStation);
+                if (shortestPath.get(nextStation) + leg.getDistanceCost() < shortestPath.get(leg.getDestination())) {
+                    shortestPath.put(leg.getDestination(), shortestPath.get(nextStation) + leg.getDistanceCost());
+                    successor.put(leg.getDestination(), nextStation);
                 }
             }
         }
@@ -147,9 +147,9 @@ public class Graph {
 
         HashMap<Station, Station> successor = new HashMap<>();
         successor.put(start, null);
-        for (Edge edge : start.getAdjacentEdges()) {
-            shortestPath.put(edge.getDestination(), edge.getTimeCost());
-            successor.put(edge.getDestination(), start);
+        for (Leg leg : start.getAdjacentLegs()) {
+            shortestPath.put(leg.getDestination(), leg.getTimeCost());
+            successor.put(leg.getDestination(), start);
         }
 
         while (true) {
@@ -176,13 +176,13 @@ public class Graph {
             }
             nextStation.setVisited(true);
 
-            for (Edge edge : nextStation.getAdjacentEdges()) {
-                if (edge.getDestination().isVisited()) {
+            for (Leg leg : nextStation.getAdjacentLegs()) {
+                if (leg.getDestination().isVisited()) {
                     continue;
                 }
-                if (shortestPath.get(nextStation) + edge.getTimeCost() < shortestPath.get(edge.getDestination())) {
-                    shortestPath.put(edge.getDestination(), shortestPath.get(nextStation) + edge.getTimeCost());
-                    successor.put(edge.getDestination(), nextStation);
+                if (shortestPath.get(nextStation) + leg.getTimeCost() < shortestPath.get(leg.getDestination())) {
+                    shortestPath.put(leg.getDestination(), shortestPath.get(nextStation) + leg.getTimeCost());
+                    successor.put(leg.getDestination(), nextStation);
                 }
             }
         }
@@ -210,34 +210,23 @@ public class Graph {
         return nextStation;
     }
 
-      // Convenient methods for our graph.
-//    public void addStation(Station station) {
-//        stations.add(station);
-//    }
-//
-//    public void addEdge(Station source, Station destination, int distanceCost) {
-//        stations.add(source);
-//        stations.add(destination);
-//        for (Edge e : source.getAdjacentEdges()) {
-//            if (e.getSource() == source && e.getDestination() == destination) {
-//                e.setDistanceCost(distanceCost);
-//                return;
-//            }
-//        }
-//        source.getAdjacentEdges().add(new Edge(source, destination, distanceCost));
-//    }
-//
-//    public void addEdge(Station source, Station destination, int timeCost) {
-//        stations.add(source);
-//        stations.add(destination);
-//        for (Edge e : source.getAdjacentEdges()) {
-//            if (e.getSource() == source && e.getDestination() == destination) {
-//                e.setTimeCost(timeCost);
-//                return;
-//            }
-//        }
-//        source.getAdjacentEdges().add(new Edge(source, destination, timeCost));
-//    }
+    // Convenient methods for our graph.
+    public void addStation(Station station) {
+        stations.add(station);
+    }
+
+    public void addEdge(Station source, Station destination, int timeCost, int distanceCost) {
+        stations.add(source);
+        stations.add(destination);
+        for (Leg leg : source.getAdjacentLegs()) {
+            if (leg.getSource() == source && leg.getDestination() == destination) {
+                leg.setTimeCost(timeCost);
+                leg.setDistanceCost(distanceCost);
+                return;
+            }
+        }
+        source.getAdjacentLegs().add(new Leg(source, destination, timeCost, distanceCost));
+    }
 
     // Method used to reset visited vertices to unvisited, in case we want to run the algorithm multiple times.
     public void resetVerticesVisited() {

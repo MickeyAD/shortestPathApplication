@@ -1,6 +1,7 @@
 package gr.university.thesis.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Proximity {
@@ -9,13 +10,8 @@ public class Proximity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "source_id")
-    private Station source;
-
-    @ManyToOne
-    @JoinColumn(name = "destination_id")
-    private Station destination;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proximity")
+    private List<Station> proximityStations;
 
     @Column
     private int totalDistance;
@@ -23,32 +19,28 @@ public class Proximity {
     @Column
     private int walkingTime;
 
-    public Proximity() {}
-
-    public Proximity(Station source, Station destination, int totalDistance) {
-        this.source = source;
-        this.destination = destination;
-        this.totalDistance = totalDistance;
-        this.walkingTime = 0;
+    public Proximity() {
     }
 
-    public Station getSource() {
-        return source;
+    public int getId() {
+        return id;
     }
 
-    public void setSource(Station source) {
-        this.source = source;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Station getDestination() {
-        return destination;
+    public List<Station> getProximityStations() {
+        return proximityStations;
     }
 
-    public void setDestination(Station destination) {
-        this.destination = destination;
+    public void setProximityStations(List<Station> proximityStations) {
+        this.proximityStations = proximityStations;
     }
 
-    public int getTotalDistance() { return totalDistance; }
+    public int getTotalDistance() {
+        return totalDistance;
+    }
 
     public int getWalkingTime() {
         return walkingTime;
