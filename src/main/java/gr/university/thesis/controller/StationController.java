@@ -4,21 +4,44 @@ import gr.university.thesis.dto.StationDetailsDTO;
 import gr.university.thesis.entity.Station;
 import gr.university.thesis.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-public class APIController {
+public class StationController {
 
     @Autowired
     private StationService stationService;
 
-    @GetMapping("/AllStations")
-    public List<Station> test() {
+    @PostMapping("/addStation")
+    public Station addStation(@ModelAttribute Station station) {
+        return stationService.addStation(station);
+    }
+
+    @PostMapping("/updateStation")
+    public Station updateStation(@ModelAttribute Station station) {
+        return stationService.updateStation(station);
+    }
+
+    @GetMapping("/viewStation/{id}")
+    public Station viewStation(@PathVariable int id) {
+        return stationService.findStationById(id);
+    }
+
+    @GetMapping("/viewAllStations")
+    public List<Station> viewAllStations() {
         return stationService.findAllStations();
+    }
+
+    @DeleteMapping("/deleteStation/{id}")
+    public void deleteStation(@PathVariable int id) {
+        stationService.deleteStationById(id);
+    }
+
+    @DeleteMapping("/deleteAllStations")
+    public void deleteAllStations() {
+        stationService.deleteAllStations();
     }
 
     @GetMapping("/{firstStationId}/{secondStationId}")
@@ -36,7 +59,9 @@ public class APIController {
         Station station2 = new Station();
         station2.setId(secondStationId);
 
-        return stationService.dijktraAlgorithmTimeCost(station, station2);
+        return stationService.findShortestPathTimeCost(station, station2);
     }
+
+
 }
 
