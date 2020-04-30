@@ -1,5 +1,6 @@
-package gr.university.thesis.entity;
+package gr.university.thesis.dto;
 
+import gr.university.thesis.entity.Station;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,13 +15,9 @@ public class Graph {
     // Set of stations (vertices)
     private Set<Station> stations;
 
-    // Set of legs (edges)
-    private Set<Leg> legs;
-
     // Empty constructor
     public Graph() {
         new HashSet<Station>();
-        new HashSet<Leg>();
     }
 
 }

@@ -1,6 +1,7 @@
 package gr.university.thesis.service;
 
 import gr.university.thesis.dto.CalculatePathDTO;
+import gr.university.thesis.dto.Graph;
 import gr.university.thesis.dto.StationDetailsDTO;
 import gr.university.thesis.entity.Leg;
 import gr.university.thesis.entity.Station;
@@ -42,7 +43,7 @@ public class StationService {
          *      2) Start station is visited, the rest stations are unvisited.
          */
         // Shortest path cost of each station from the start station.
-        HashMap<Object, Integer> shortestPath = new HashMap<>();
+        HashMap<Station, Integer> shortestPath = new HashMap<>();
         // for loop: Initializes total cost values to every station from the start.
         for (Station station : stations) {
             // the distance from start station to itself is zero...
@@ -79,7 +80,7 @@ public class StationService {
 
         // Loop which repeats until all stations in the graph are visited.
         while (true) {
-            Station nextStation = nextClosestAndUnvisitedStationInteger(shortestPath);
+            Station nextStation = nextClosestAndUnvisitedStation(shortestPath);
             /*
              * In case the next station is the final end destination:
              *     1) Print shortest path
@@ -148,58 +149,60 @@ public class StationService {
         }
     }
 
-    public double findShortestPathTimeCost(Object start, Object end) {
-        Station initialStation = stationRepository.findStationById(((Station) start).getId());
-        initialStation.setAdjacentLegs(findAdjacentLegs(initialStation));
-
-        Station finalStation = stationRepository.findStationById(((Station) end).getId());
-        finalStation.setAdjacentLegs(findAdjacentLegs(finalStation));
+    public Graph findShortestPathTimeCost(Station start, Station end) {
 
         CalculatePathDTO calculatePathDTO = new CalculatePathDTO();
 
-        List<Station> stationList = findAllStations();
+        List<Station> stationList = stationRepository.findAll();
         Set<Station> stations = new HashSet<>(stationList);
 
-        HashMap<Object, Double> shortestPath = new HashMap<>();
+        for (Station station : stationList) {
+            station.setAdjacentLegs(findAdjacentLegs(station));
+        }
+
+        Station initialStation = stationRepository.findStationById(start.getId());
+        Station finalStation = stationRepository.findStationById(end.getId());
+
+        HashMap<Station, Integer> shortestPath = new HashMap<>();
+
         for (Station station : stations) {
             if (station == initialStation) {
-                shortestPath.put(initialStation, 0.0);
+                shortestPath.put(initialStation, 0);
             } else {
-                shortestPath.put(station, Double.MAX_VALUE);
+                shortestPath.put(station, Integer.MAX_VALUE);
             }
         }
         initialStation.setVisited(true);
 
-        HashMap<Object, Object> successor = new HashMap<>();
+        HashMap<Station, Station> successor = new HashMap<>();
         successor.put(initialStation, null);
         for (Leg leg : initialStation.getAdjacentLegs()) {
-            shortestPath.put(leg.getDestination(), (double) leg.getTimeCost());
+            shortestPath.put(leg.getDestination(), leg.getTimeCost());
             successor.put(leg.getDestination(), initialStation);
         }
 
+        ArrayList<Station> pathList = new ArrayList<>();
         while (true) {
-            Station nextStation = nextClosestAndUnvisitedStationDouble(shortestPath);
+            Station nextStation = nextClosestAndUnvisitedStation(shortestPath);
             if (nextStation == finalStation) {
-                System.out.println("The path with the smallest time cost between " + initialStation.getName() + " and " + finalStation.getName() + " is:");
                 Station child = finalStation;
-                String path = finalStation.getName();
                 while (true) {
-                    Station parent = (Station) successor.get(child);
+                    Station parent = successor.get(child);
                     if (parent == null) {
                         break;
                     }
-                    path = parent.getName() + " -> " + path;
+                    pathList.add(parent);
                     child = parent;
                 }
-                System.out.println(path);
-//                System.out.println("Total time cost: " + Formatter.timeDuration(shortestPath.get(finalStation)) + "\n");
-//                calculatePathDTO.setTimeCost(shortestPath.get(finalStation));
-                return shortestPath.get(finalStation);
-//                break;
+                System.out.println("Total time cost: " + Formatter.timeDuration(shortestPath.get(finalStation)));
+
+                calculatePathDTO.setTimeCost(shortestPath.get(finalStation));
+
+                Set<Station> pathListSet = new HashSet<>(pathList);
+                return new Graph(pathListSet);
             }
             if (nextStation == null) {
                 System.out.println("No available path exists between " + initialStation.getName() + " and " + finalStation.getName());
-                return 0.0;
             }
             nextStation.setVisited(true);
 
@@ -215,27 +218,7 @@ public class StationService {
         }
     }
 
-    private Station nextClosestAndUnvisitedStationDouble(HashMap<Object, Double> shortestPath) {
-        List<Station> stationList = findAllStations();
-        Set<Station> stations = new HashSet<>(stationList);
-
-        Station nextStation = null;
-        double shortestCost = Double.MAX_VALUE;
-        for (Station station : stations) {
-            double currentCost = shortestPath.get(station);
-            //Skipping already visited stations or ones with unknown shortest path (infinite).
-            if (station.isVisited() || currentCost == Double.MAX_VALUE) {
-                continue;
-            }
-            if (currentCost < shortestCost) {
-                shortestCost = currentCost;
-                nextStation = station;
-            }
-        }
-        return nextStation;
-    }
-
-    private Station nextClosestAndUnvisitedStationInteger(HashMap<Object, Integer> shortestPath) {
+    private Station nextClosestAndUnvisitedStation(HashMap<Station, Integer> shortestPath) {
         List<Station> stationList = findAllStations();
         Set<Station> stations = new HashSet<>(stationList);
 

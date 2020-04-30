@@ -1,7 +1,9 @@
 package gr.university.thesis.controller;
 
+import gr.university.thesis.dto.Graph;
 import gr.university.thesis.dto.StationDetailsDTO;
 import gr.university.thesis.entity.Station;
+import gr.university.thesis.service.LegService;
 import gr.university.thesis.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,9 @@ public class StationController {
 
     @Autowired
     private StationService stationService;
+
+    @Autowired
+    private LegService legService;
 
     @PostMapping("/addStation")
     public Station addStation(@ModelAttribute Station station) {
@@ -51,8 +56,8 @@ public class StationController {
     }
 
     @GetMapping("/calculate/{firstStationId}/{secondStationId}")
-    public double inputFromUser2(@PathVariable int firstStationId,
-                                 @PathVariable int secondStationId) {
+    public Graph findShortestPath(@PathVariable int firstStationId,
+                                  @PathVariable int secondStationId) {
         Station station = new Station();
         station.setId(firstStationId);
 
