@@ -1,5 +1,6 @@
 package gr.university.thesis.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,11 +20,13 @@ public class Leg {
     // First end of a leg called source
     @ManyToOne
     @JoinColumn(name = "source_id")
+    @JsonManagedReference
     private Station source;
 
     // Second end of a leg called destination
     @ManyToOne
     @JoinColumn(name = "destination_id")
+    @JsonManagedReference
     private Station destination;
 
     // Distance cost of each leg

@@ -3,6 +3,8 @@ package gr.university.thesis.controller;
 import gr.university.thesis.entity.VehicleType;
 import gr.university.thesis.service.VehicleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,33 +15,33 @@ public class VehicleTypeController {
     @Autowired
     private VehicleTypeService vehicleTypeService;
 
-    @PostMapping("/addVehicleType")
-    public VehicleType addVehicleType(@ModelAttribute VehicleType vehicleType) {
+    @PostMapping("/vehicleType/add")
+    public ResponseEntity<VehicleType> addVehicleType(@RequestBody VehicleType vehicleType) {
         return vehicleTypeService.addVehicleType(vehicleType);
     }
 
-    @PostMapping("/updateVehicleType")
-    public VehicleType updateVehicleType(@ModelAttribute VehicleType vehicleType) {
-        return vehicleTypeService.updateVehicleType(vehicleType);
+    @PutMapping("/vehicleType/update")
+    public ResponseEntity<VehicleType> updateVehicleType(@PathVariable int id, @RequestBody VehicleType vehicleType) {
+        return vehicleTypeService.updateVehicleType(id, vehicleType);
     }
 
-    @GetMapping("/viewVehicleType/{id}")
-    public VehicleType viewVehicleType(@PathVariable int id) {
+    @GetMapping("/vehicleType/view/{id}")
+    public ResponseEntity<VehicleType> viewVehicleType(@PathVariable int id) {
         return vehicleTypeService.findVehicleTypeById(id);
     }
 
-    @GetMapping("/viewAllVehicleTypes")
-    public List<VehicleType> viewAllVehicleTypes() {
+    @GetMapping("/vehicleType/viewAll")
+    public ResponseEntity<List<VehicleType>> viewAllVehicleTypes() {
         return vehicleTypeService.findAllVehicleTypes();
     }
 
-    @DeleteMapping("/deleteVehicleType/{id}")
-    public void deleteVehicleType(@PathVariable int id) {
-        vehicleTypeService.deleteVehicleTypeById(id);
+    @DeleteMapping("/vehicleType/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteVehicleType(@PathVariable int id) {
+        return vehicleTypeService.deleteVehicleTypeById(id);
     }
 
-    @DeleteMapping("/deleteAllVehicleTypes")
-    public void deleteAllVehicleTypes() {
-        vehicleTypeService.deleteAllVehicleTypes();
+    @DeleteMapping("/vehicleType/deleteAll")
+    public ResponseEntity<HttpStatus> deleteAllVehicleTypes() {
+        return vehicleTypeService.deleteAllVehicleTypes();
     }
 }
